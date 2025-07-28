@@ -110,7 +110,7 @@ export default {
           @click="goToLogin"
           class="px-6 py-2 bg-transparent rounded-full border border-gray-700 hover:bg-gray-50 transition"
         >
-          Log-in
+          Log in
         </button>
       </div>
     </section>
