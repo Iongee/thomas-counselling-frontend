@@ -1,0 +1,219 @@
+@import "tailwindcss";
+
+html, body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'San Francisco', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    background-image: url('assets/background.svg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-attachment: fixed;
+    background-position: center;
+}
+
+#app {
+    min-height: 100vh;
+    background: transparent;
+}
+
+/* Keep landing page section backgrounds as intended */
+#how-it-works {
+    background: #f8f4ff !important; /* Light purple/lavender */
+}
+
+#why-talk {
+    background: #f3efff !important; /* Slightly different purple/lavender */
+}
+
+footer {
+    background: #e5e7eb !important; /* Keep gray footer */
+}
+
+/* Landing page cards should have proper white backgrounds */
+#how-it-works .bg-white,
+#why-talk .bg-white {
+    background: white !important;
+}
+
+/* Make ALL authenticated components completely transparent */
+.w-80.bg-white,
+nav,
+.bg-gray-50:not(#how-it-works),
+.bg-gray-100:not(#why-talk),
+.bg-white:not(#how-it-works .bg-white):not(#why-talk .bg-white):not(footer .bg-white):not(.fixed .bg-white),
+.min-h-screen {
+    background: transparent !important;
+}
+
+/* Make sure no backdrop filters or overlays are applied to authenticated areas */
+.w-80.bg-white,
+nav,
+.bg-gray-50:not(#how-it-works),
+.bg-gray-100:not(#why-talk) {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+/* Headings */
+h1,
+h2,
+h3,
+h4 {
+    font-weight: 600;
+    margin-bottom: 0.5em;
+    color: #1c1c1e;
+}
+
+.bubble-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.bubble {
+    padding: 10px 16px;
+    background-color: rgba(255, 255, 255, 0.3) !important;
+    border-radius: 999px;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+}
+
+.bubble.selected {
+    background-color: rgba(255, 255, 255, 0.4) !important;
+    border-color: #007aff;
+}
+
+/* Minimal backgrounds only for critical readability */
+form {
+    background: rgba(255, 255, 255, 0.2) !important;
+    padding: 1.5rem;
+    border-radius: 12px;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+input, textarea, select {
+    background: rgba(255, 255, 255, 0.3) !important;
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Make cards very subtle */
+.card, .panel {
+    background: rgba(255, 255, 255, 0.1) !important;
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+}
+
+/* Enhanced Delete Button Styles */
+/* Session delete buttons in sidebar */
+button[title="Remove relationship"],
+button:has(svg[d*="M19 7l-.867 12.142"]),
+.p-2.text-red-500,
+.p-2.text-red-600 {
+    cursor: pointer !important;
+    transition: all 0.2s ease-in-out !important;
+    transform: translateZ(0) !important; /* Enable 3D acceleration */
+}
+
+button[title="Remove relationship"]:hover,
+button:has(svg[d*="M19 7l-.867 12.142"]):hover,
+.p-2.text-red-500:hover,
+.p-2.text-red-600:hover {
+    cursor: pointer !important;
+    transform: translateY(-1px) scale(1.05) !important;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3) !important;
+}
+
+button[title="Remove relationship"]:active,
+button:has(svg[d*="M19 7l-.867 12.142"]):active,
+.p-2.text-red-500:active,
+.p-2.text-red-600:active {
+    transform: translateY(0) scale(0.98) !important;
+    box-shadow: 0 2px 6px rgba(239, 68, 68, 0.2) !important;
+}
+
+/* Account deletion buttons */
+.bg-red-600,
+button.bg-red-600 {
+    cursor: pointer !important;
+    transition: all 0.2s ease-in-out !important;
+    transform: translateZ(0) !important;
+}
+
+.bg-red-600:hover,
+button.bg-red-600:hover {
+    cursor: pointer !important;
+    transform: translateY(-2px) scale(1.02) !important;
+    box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4) !important;
+}
+
+.bg-red-600:active,
+button.bg-red-600:active {
+    transform: translateY(0) scale(0.98) !important;
+    box-shadow: 0 3px 10px rgba(220, 38, 38, 0.3) !important;
+}
+
+
+/* General clickable button enhancement */
+button:not(.disabled):not([disabled]) {
+    cursor: pointer !important;
+}
+
+/* Enhanced 3D effect for all interactive buttons */
+button.cursor-pointer,
+.cursor-pointer {
+    transition: all 0.2s ease-in-out !important;
+    transform: translateZ(0) !important;
+}
+
+button.cursor-pointer:hover,
+.cursor-pointer:hover {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+button.cursor-pointer:active,
+.cursor-pointer:active {
+    transform: translateY(0) scale(0.98) !important;
+}
+
+/* Make hover states very transparent */
+.hover\:bg-gray-50:hover,
+.hover\:bg-gray-100:hover {
+    background: rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Modal specific styles to override global transparency */
+.fixed.inset-0 {
+    background: rgba(0, 0, 0, 0.5) !important;
+}
+
+.fixed .bg-white {
+    background: white !important;
+}
+
+/* Ensure modal form elements have proper backgrounds */
+.fixed form {
+    background: transparent !important;
+}
+
+.fixed input, 
+.fixed textarea, 
+.fixed select {
+    background: white !important;
+    border: 1px solid #d1d5db;
+}
