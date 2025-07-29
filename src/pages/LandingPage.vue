@@ -11,7 +11,7 @@ export default {
   setup() {
     const authStore = useAuthStore();
     const router = useRouter();
-
+    console.log('Backend API URL:', import.meta.env.VITE_API_BASE_URL)
     return {
       authStore,
       router,
