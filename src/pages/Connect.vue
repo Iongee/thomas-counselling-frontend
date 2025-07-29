@@ -25,11 +25,12 @@ export default {
         }
     },
     created() {
-        // Extract host from API_BASE_URL (remove http:// prefix)
+        // Extract host from API_BASE_URL and determine WebSocket protocol
         const host = API_BASE_URL.replace('http://', '').replace('https://', '')
-        let url = `ws://${host}/ws/socket-server/`
+        const wsProtocol = API_BASE_URL.startsWith('https://') ? 'wss://' : 'ws://'
+        let url = `${wsProtocol}${host}/ws/socket-server/`
 
-        
+
         const chatSocket = new WebSocket(url)
 
         chatSocket.onmessage = function(e) {

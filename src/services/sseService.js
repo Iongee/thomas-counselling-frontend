@@ -22,19 +22,24 @@ class SSEService {
         }
 
         // Try the simple endpoint first, then fall back to the class-based one
-        const url = `${API_BASE_URL}/api/sse-simple/?token=${encodeURIComponent(token)}`
-        
+        let url = `${API_BASE_URL}/api/sse-simple/?token=${encodeURIComponent(token)}`
+
+        // Add ngrok header as URL parameter if using ngrok
+        if (API_BASE_URL.includes('ngrok')) {
+            url += '&ngrok-skip-browser-warning=true'
+        }
+
         this.eventSource = new EventSource(url, {
             withCredentials: true
         })
-        
+
         this.eventSource.onopen = (event) => {
             this.isConnected = true
             this.reconnectAttempts = 0
             this.emit('connected', { status: 'connected' })
             this.notifyConnectionListeners('connected')
         }
-        
+
         this.eventSource.onmessage = (event) => {
             try {
                 const data = JSON.parse(event.data)
@@ -43,7 +48,7 @@ class SSEService {
                 // Handle parsing error silently
             }
         }
-        
+
         this.eventSource.onerror = (error) => {
             this.isConnected = false
             this.notifyConnectionListeners('disconnected')
@@ -55,26 +60,26 @@ class SSEService {
                 }
             }
         }
-        
+
         // Handle specific event types
         this.addEventListener('connected', (event) => {
             const data = JSON.parse(event.data)
         })
-        
+
         this.addEventListener('heartbeat', (event) => {
             // Keep connection alive
         })
-        
+
         this.addEventListener('session_update', (event) => {
             const data = JSON.parse(event.data)
             this.emit('session_update', data)
         })
-        
+
         this.addEventListener('session_invitation', (event) => {
             const data = JSON.parse(event.data)
             this.emit('session_invitation', data)
         })
-        
+
         this.addEventListener('session_invitation_accepted', (event) => {
             const data = JSON.parse(event.data)
             this.emit('session_invitation_accepted', data)
@@ -84,37 +89,37 @@ class SSEService {
             const data = JSON.parse(event.data)
             this.emit('session_invitation_rejected', data)
         })
-        
+
         this.addEventListener('relationship_invitation', (event) => {
             const data = JSON.parse(event.data)
             this.emit('relationship_invitation', data)
         })
-        
+
         this.addEventListener('notification', (event) => {
             const data = JSON.parse(event.data)
             this.emit('notification', data)
         })
-        
+
         this.addEventListener('session_deleted', (event) => {
             const data = JSON.parse(event.data)
             this.emit('session_deleted', data)
         })
-        
+
         this.addEventListener('sessions_update', (event) => {
             const data = JSON.parse(event.data)
             this.emit('sessions_update', data)
         })
-        
+
         this.addEventListener('objective_advancement', (event) => {
             const data = JSON.parse(event.data)
             this.emit('objective_advancement', data)
         })
-        
+
         this.addEventListener('session_status_change', (event) => {
             const data = JSON.parse(event.data)
             this.emit('session_status_change', data)
         })
-        
+
         this.addEventListener('vote_update', (event) => {
             const data = JSON.parse(event.data)
             this.emit('vote_update', data)
@@ -155,19 +160,19 @@ class SSEService {
             this.emit('objective_completion', data)
         })
     }
-    
+
     disconnect() {
         this.shouldReconnect = false
-        
+
         if (this.eventSource) {
             this.eventSource.close()
             this.eventSource = null
         }
-        
+
         this.isConnected = false
         this.notifyConnectionListeners('disconnected')
     }
-    
+
     handleReconnect(token) {
         if (this.reconnectAttempts < this.maxReconnectAttempts) {
             this.reconnectAttempts++
@@ -181,20 +186,20 @@ class SSEService {
             this.emit('connection_failed', { error: 'Max reconnection attempts reached' })
         }
     }
-    
+
     addEventListener(eventType, callback) {
         if (this.eventSource) {
             this.eventSource.addEventListener(eventType, callback)
         }
     }
-    
+
     on(event, callback) {
         if (!this.listeners.has(event)) {
             this.listeners.set(event, [])
         }
         this.listeners.get(event).push(callback)
     }
-    
+
     off(event, callback) {
         if (this.listeners.has(event)) {
             const callbacks = this.listeners.get(event)
@@ -204,7 +209,7 @@ class SSEService {
             }
         }
     }
-    
+
     emit(event, data) {
         if (this.listeners.has(event)) {
             this.listeners.get(event).forEach(callback => {
@@ -216,18 +221,18 @@ class SSEService {
             })
         }
     }
-    
+
     onConnectionChange(callback) {
         this.connectionListeners.push(callback)
     }
-    
+
     offConnectionChange(callback) {
         const index = this.connectionListeners.indexOf(callback)
         if (index > -1) {
             this.connectionListeners.splice(index, 1)
         }
     }
-    
+
     notifyConnectionListeners(status) {
         this.connectionListeners.forEach(callback => {
             try {
@@ -237,7 +242,7 @@ class SSEService {
             }
         })
     }
-    
+
     getConnectionStatus() {
         return {
             isConnected: this.isConnected,

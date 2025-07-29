@@ -7,7 +7,9 @@ export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localho
 const url = API_BASE_URL
 
 console.log('Backend API URL in api.js:', import.meta.env.VITE_API_BASE_URL)
-function getAuthHeaders() {
+
+// Export the function so it can be used in other components
+export function getAuthHeaders() {
     const token = localStorage.getItem('idToken');
 
     const headers = {

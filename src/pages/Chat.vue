@@ -1,7 +1,7 @@
 <script>
 import { useAuthStore } from '../authentication/auth';
 import { useRouter } from 'vue-router';
-import { checkUser, getMessages, getSessionTurnState, API_BASE_URL } from '../api';
+import { checkUser, getMessages, getSessionTurnState, API_BASE_URL, getAuthHeaders } from '../api';
 import sseService from '../services/sseService.js';
 import ObjectiveSidebar from '../components/ObjectiveSidebar.vue';
 import ChatHeader from '../components/ChatHeader.vue';
@@ -484,10 +484,7 @@ export default {
                 // Fetch session data including objectives and message counts
                 const response = await fetch(`${API_BASE_URL}/api/session/${this.session_uuid}/`, {
                     method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${localStorage.getItem('idToken')}`,
-                    },
+                    headers: getAuthHeaders(),
                 });
                 
                 if (response.ok) {
@@ -541,10 +538,7 @@ export default {
             try {
                 const response = await fetch(`${API_BASE_URL}/api/objective-messages/${this.session_uuid}/${this.currentObjectiveIndex}/`, {
                     method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${localStorage.getItem('idToken')}`,
-                    },
+                    headers: getAuthHeaders(),
                 });
                 
                 if (response.ok) {
@@ -866,10 +860,7 @@ export default {
             try {
                 const response = await fetch(`${API_BASE_URL}/api/vote-move-next/${this.session_uuid}/${this.currentObjectiveIndex}/`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${localStorage.getItem('idToken')}`,
-                    },
+                    headers: getAuthHeaders(),
                     body: JSON.stringify({
                         action: 'vote'
                     })
@@ -939,10 +930,7 @@ export default {
             try {
                 const response = await fetch(`${API_BASE_URL}/api/vote-move-next/${this.session_uuid}/${this.currentObjectiveIndex}/`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${localStorage.getItem('idToken')}`,
-                    },
+                    headers: getAuthHeaders(),
                     body: JSON.stringify({
                         action: 'reject'
                     })
@@ -962,10 +950,7 @@ export default {
             try {
                 const response = await fetch(`${API_BASE_URL}/api/move-to-next-objective/${this.session_uuid}/`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${localStorage.getItem('idToken')}`,
-                    },
+                    headers: getAuthHeaders(),
                 });
                 
                 if (response.ok) {
@@ -1057,10 +1042,7 @@ export default {
                 // Update message count for this objective
                 const response = await fetch(`${API_BASE_URL}/api/objective-messages/${this.session_uuid}/${index}/`, {
                     method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${localStorage.getItem('idToken')}`,
-                    },
+                    headers: getAuthHeaders(),
                 });
 
                 if (response.ok) {
@@ -1092,10 +1074,7 @@ export default {
                 try {
                     const response = await fetch(`${API_BASE_URL}/api/objective-messages/${this.session_uuid}/${index}/`, {
                         method: 'GET',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${localStorage.getItem('idToken')}`,
-                        },
+                        headers: getAuthHeaders(),
                     });
                     
                     if (response.ok) {
