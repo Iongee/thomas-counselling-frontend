@@ -622,9 +622,10 @@ export default {
                 return;
             }
 
-            // Extract host from API_BASE_URL (remove http:// prefix)
+            // Extract host from API_BASE_URL and determine WebSocket protocol
             const host = API_BASE_URL.replace('http://', '').replace('https://', '');
-            const url = `ws://${host}/ws/socket-server/${this.session_uuid}/`;
+            const wsProtocol = API_BASE_URL.startsWith('https://') ? 'wss://' : 'ws://';
+            const url = `${wsProtocol}${host}/ws/socket-server/${this.session_uuid}/`;
 
             try {
                 this.chatSocket = new WebSocket(url);
