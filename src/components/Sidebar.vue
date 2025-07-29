@@ -34,7 +34,7 @@ export default {
         this.sessions = [];
       } finally {
         this.loading = false;
-        console.log('Sessions fetched:', this.sessions);
+        // console.log('Sessions fetched:', this.sessions);
       }
     },
     
@@ -82,13 +82,13 @@ export default {
     
     handleSessionInvitation(data) {
       // Refresh invitations when new invitation is received
-      console.log('Handling session invitation in Sidebar:', data);
+      // console.log('Handling session invitation in Sidebar:', data);
       this.fetchSessionInvitations();
     },
 
     handleSessionInvitationRejected(data) {
       // Handle session invitation rejection
-      console.log('Handling session invitation rejected in Sidebar:', data);
+      // console.log('Handling session invitation rejected in Sidebar:', data);
 
       // Update the session status in the sessions list
       const sessionIndex = this.sessions.findIndex(s => s.session_uuid === data.session.session_uuid);
@@ -135,8 +135,6 @@ export default {
       }
     },
     getConversationPartner(session) {
-      console.log("qewrewrewrwe");
-      console.log(session);
       if (session.other_participants && session.other_participants.length > 0) {
         return session.other_participants[0].display_name;
       }
@@ -149,7 +147,6 @@ export default {
       return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
     },
     openChat(session) {
-      console.log(session);
       if (session.status === 'active') {
         this.router.push({ name: 'chat', params: { session_uuid: session.session_uuid } });
       } else if (session.status === 'pending') {
