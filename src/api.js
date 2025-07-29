@@ -2,17 +2,15 @@ import { resolveComponent } from "vue";
 import { useAuthStore } from "./authentication/auth";
 
 // Export the base URL so it can be imported in other components
-// You can change this single line for deployment:
-// export const API_BASE_URL = 'https://your-production-domain.com'
-// Or use environment variables: export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
-export const API_BASE_URL = 'http://localhost:8000'
+// Using environment variables for better security and flexibility
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
 const url = API_BASE_URL
 
 function getAuthHeaders() {
     const token = localStorage.getItem('idToken');
 
     const headers = {
-        'Content-Type' : 'application/json',
+        'Content-Type': 'application/json',
     };
 
     if (token) {
@@ -24,7 +22,7 @@ function getAuthHeaders() {
 // Returns counselling session id
 export async function startCounsellingSession(categories, context, partner_id, partner_message) {
     const headers = getAuthHeaders();
-    
+
     const response = await fetch(`${url}/api/start-counselling-session/`, {
         method: 'POST',
         headers: headers,
@@ -46,7 +44,7 @@ export async function startCounsellingSession(categories, context, partner_id, p
 // Objective Generation API functions
 export async function generateObjectives(categories, context, partner_name, partner_relationship) {
     const headers = getAuthHeaders();
-    
+
     const response = await fetch(`${url}/api/generate-objectives/`, {
         method: 'POST',
         headers: headers,
@@ -68,7 +66,7 @@ export async function generateObjectives(categories, context, partner_name, part
 
 export async function refineObjectives(current_objectives, user_feedback) {
     const headers = getAuthHeaders();
-    
+
     const response = await fetch(`${url}/api/refine-objectives/`, {
         method: 'POST',
         headers: headers,
@@ -88,7 +86,7 @@ export async function refineObjectives(current_objectives, user_feedback) {
 
 export async function createSessionWithObjectives(categories, context, objectives, partner_id, partner_message) {
     const headers = getAuthHeaders();
-    
+
     const response = await fetch(`${url}/api/create-session-with-objectives/`, {
         method: 'POST',
         headers: headers,
@@ -111,10 +109,10 @@ export async function createSessionWithObjectives(categories, context, objective
 
 // @TODO
 // Investigate if session uuid is the best to create a reflection or chat
-export async function storeReflection(feelings,hopes,session_uuid) {
+export async function storeReflection(feelings, hopes, session_uuid) {
     try {
         const headers = getAuthHeaders();
-        
+
         const response = await fetch(`${url}/api/submit-reflection/`, {
             method: 'POST',
             headers: headers,
@@ -127,11 +125,11 @@ export async function storeReflection(feelings,hopes,session_uuid) {
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
-        
+
         // just http status
         const data = await response.json();
         return data;
-    } catch(error) {
+    } catch (error) {
         console.error('Error starting counselling session:', error);
         throw error;
     }
@@ -140,11 +138,11 @@ export async function storeReflection(feelings,hopes,session_uuid) {
 export async function checkUser(session_uuid) {
     try {
         const headers = getAuthHeaders();
-        const response = await fetch(`${url}/api/check-session-user/`,{
+        const response = await fetch(`${url}/api/check-session-user/`, {
             method: 'POST',
             headers: headers,
             body: JSON.stringify({
-                session_uuid:session_uuid
+                session_uuid: session_uuid
             }),
         });
 
@@ -163,10 +161,10 @@ export async function getMessages(session_uuid) {
     const headers = getAuthHeaders();
     try {
         const response = await fetch(`${url}/api/get-messages/${session_uuid}`, {
-            method:'GET',
+            method: 'GET',
             headers: headers,
         });
-    
+
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
@@ -174,7 +172,7 @@ export async function getMessages(session_uuid) {
         const data = await response.json();
         return data;  // Return full response including chat_history and participants
 
-    } catch(error) {
+    } catch (error) {
         console.error('Error getting messages:', error);
         throw error
     }
@@ -183,7 +181,7 @@ export async function getMessages(session_uuid) {
 export async function getUserSessions() {
     try {
         const headers = getAuthHeaders();
-        
+
         const response = await fetch(`${url}/api/user-sessions/`, {
             method: 'GET',
             headers: headers,
@@ -205,16 +203,16 @@ export async function getUserSessions() {
 export async function getUserNetwork() {
     const headers = getAuthHeaders();
 
-    
+
     const response = await fetch(`${url}/api/user-network/`, {
         method: 'GET',
         headers: headers,
     });
-    
+
     if (!response.ok) {
         throw new Error('Failed to fetch user network');
     }
-    
+
     return await response.json();
 }
 
@@ -225,12 +223,12 @@ export async function sendRelationshipInvitation(invitationData) {
         headers: headers,
         body: JSON.stringify(invitationData),
     });
-    
+
     if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.detail || 'Failed to send invitation');
     }
-    
+
     return await response.json();
 }
 
@@ -245,29 +243,29 @@ export async function respondToRelationshipInvitation(invitationUuid, action) {
             action: action
         }),
     });
-    
+
     if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.detail || `Failed to ${action} invitation`);
     }
-    
+
     return await response.json();
 }
 
 export async function cancelRelationshipInvitation(invitationUuid) {
     const headers = getAuthHeaders();
 
-    
+
     const response = await fetch(`${url}/api/cancel-relationship-invitation/${invitationUuid}/`, {
         method: 'DELETE',
         headers: headers,
     });
-    
+
     if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.detail || 'Failed to cancel invitation');
     }
-    
+
     return await response.json();
 }
 
@@ -278,12 +276,12 @@ export async function removeRelationship(relationshipId) {
         method: 'DELETE',
         headers: headers,
     });
-    
+
     if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.detail || 'Failed to remove relationship');
     }
-    
+
     return await response.json();
 }
 
@@ -293,12 +291,12 @@ export async function getRelationshipDetails(relationshipId) {
         method: 'GET',
         headers: headers,
     });
-    
+
     if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || 'Failed to fetch relationship details');
     }
-    
+
     return await response.json();
 }
 
@@ -309,12 +307,12 @@ export async function updateRelationship(relationshipId, updateData) {
         headers: headers,
         body: JSON.stringify(updateData),
     });
-    
+
     if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || 'Failed to update relationship');
     }
-    
+
     return await response.json();
 }
 
@@ -326,11 +324,11 @@ export async function getUserRelationshipsForSession() {
         method: 'GET',
         headers: headers,
     });
-    
+
     if (!response.ok) {
         throw new Error('Failed to fetch relationships for session');
     }
-    
+
     return await response.json();
 }
 
@@ -404,16 +402,16 @@ export async function getUserSessionInvitations() {
         method: 'GET',
         headers: headers,
     });
-    
+
     if (!response.ok) {
         throw new Error('Failed to fetch session invitations');
     }
-    
+
     return await response.json();
 }
 
 export async function respondToSessionInvitation(invitationUuid, action) {
-    const headers = getAuthHeaders();    
+    const headers = getAuthHeaders();
     const response = await fetch(`${url}/api/respond-session-invitation/`, {
         method: 'POST',
         headers: headers,
@@ -422,12 +420,12 @@ export async function respondToSessionInvitation(invitationUuid, action) {
             action: action
         }),
     });
-    
+
     if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.detail || `Failed to ${action} session invitation`);
     }
-    
+
     return await response.json();
 }
 
@@ -442,12 +440,12 @@ export async function voteToEndSession(sessionUuid, action = 'vote') {
             action: action
         }),
     });
-    
+
     if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.detail || 'Failed to vote to end session');
     }
-    
+
     return await response.json();
 }
 
@@ -461,12 +459,12 @@ export async function submitSummaryResponse(sessionUuid, howYouFeelNow) {
             how_you_feel_now: howYouFeelNow
         }),
     });
-    
+
     if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.detail || 'Failed to submit summary response');
     }
-    
+
     return await response.json();
 }
 
@@ -477,11 +475,11 @@ export async function getSessionSummary(sessionUuid) {
         method: 'GET',
         headers: headers,
     });
-    
+
     if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.detail || 'Failed to get session summary');
     }
-    
+
     return await response.json();
 }
