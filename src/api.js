@@ -14,6 +14,11 @@ function getAuthHeaders() {
         'Content-Type': 'application/json',
     };
 
+    // Add ngrok header if using ngrok URL
+    if (API_BASE_URL.includes('ngrok')) {
+        headers['ngrok-skip-browser-warning'] = 'true';
+    }
+
     if (token) {
         headers['Authorization'] = `Bearer ${token}`;
     }
