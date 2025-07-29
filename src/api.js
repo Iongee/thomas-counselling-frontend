@@ -6,6 +6,7 @@ import { useAuthStore } from "./authentication/auth";
 export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
 const url = API_BASE_URL
 
+console.log('Backend API URL in api.js:', import.meta.env.VITE_API_BASE_URL)
 function getAuthHeaders() {
     const token = localStorage.getItem('idToken');
 
