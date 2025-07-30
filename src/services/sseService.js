@@ -18,6 +18,7 @@ class SSEService {
         }
 
         if (!token) {
+            console.error('SSE: No token provided')
             return
         }
 
@@ -28,6 +29,8 @@ class SSEService {
         if (API_BASE_URL.includes('ngrok')) {
             url += '&ngrok-skip-browser-warning=true'
         }
+
+        console.log('SSE: Connecting to:', url.replace(/token=[^&]+/, 'token=***'))
 
         this.eventSource = new EventSource(url, {
             withCredentials: true
@@ -50,12 +53,17 @@ class SSEService {
         }
 
         this.eventSource.onerror = (error) => {
+            console.error('SSE: Connection error', {
+                readyState: this.eventSource.readyState,
+                error: error
+            })
             this.isConnected = false
             this.notifyConnectionListeners('disconnected')
 
             // Check if it's a connection error (readyState 2 = CLOSED)
             if (this.eventSource.readyState === 2) {
                 if (this.shouldReconnect) {
+                    console.log('SSE: Attempting to reconnect...')
                     this.handleReconnect(token)
                 }
             }

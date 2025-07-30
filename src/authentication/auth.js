@@ -79,7 +79,7 @@ export const useAuthStore = defineStore('auth', {
             this.user = null
             localStorage.removeItem('idToken')
             localStorage.removeItem('user')
-            
+
             // Disconnect SSE
             sseService.disconnect()
         },
@@ -121,7 +121,7 @@ export const useAuthStore = defineStore('auth', {
         async logout(router = null) {
             try {
                 await signOut(auth);
-                this.clearAuth(); 
+                this.clearAuth();
                 if (router) {
                     // Clear browser history to prevent back button access
                     router.replace({ name: 'login' });
@@ -149,9 +149,9 @@ export const useAuthStore = defineStore('auth', {
 
                 await signOut(auth);
                 this.clearAuth()
-                
+
                 if (router) {
-                    await router.push('/please-verify'); 
+                    await router.push('/please-verify');
                 }
             } catch (error) {
                 this.clearAuth()
@@ -294,19 +294,21 @@ export const useAuthStore = defineStore('auth', {
                 throw new Error('EMAIL_REAUTH_REQUIRED')
             }
         },
-        
+
         connectSSE() {
             if (!this.idToken) {
+                console.warn('Auth: No token available for SSE connection')
                 return
             }
 
+            console.log('Auth: Connecting to SSE with token')
             // Connect to SSE
             sseService.connect(this.idToken)
 
             // Set up event listeners
             this.setupSSEListeners()
         },
-        
+
         setupSSEListeners() {
             // Listen for notifications - DISABLED
             // sseService.on('notification', (data) => {
@@ -318,7 +320,7 @@ export const useAuthStore = defineStore('auth', {
             //         notification.type === 'error' ? 8000 : 5000
             //     )
             // })
-            
+
             // Listen for session invitations - NOTIFICATIONS DISABLED
             sseService.on('session_invitation', (data) => {
                 // notificationService.info(
@@ -327,7 +329,7 @@ export const useAuthStore = defineStore('auth', {
                 //     6000
                 // )
             })
-            
+
             // Listen for session invitation acceptance - NOTIFICATIONS DISABLED
             sseService.on('session_invitation_accepted', (data) => {
                 // notificationService.success(
@@ -336,7 +338,7 @@ export const useAuthStore = defineStore('auth', {
                 //     5000
                 // )
             })
-            
+
             // Listen for relationship invitations
             sseService.on('relationship_invitation', (data) => {
                 notificationService.info(
@@ -345,7 +347,7 @@ export const useAuthStore = defineStore('auth', {
                     6000
                 )
             })
-            
+
             // Listen for session deletion
             sseService.on('session_deleted', (data) => {
                 notificationService.warning(
@@ -354,7 +356,7 @@ export const useAuthStore = defineStore('auth', {
                     6000
                 )
             })
-            
+
             // Listen for connection status changes
             sseService.onConnectionChange((status) => {
                 // Handle connection status changes silently
