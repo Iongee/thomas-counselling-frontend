@@ -79,7 +79,7 @@ export const useAuthStore = defineStore('auth', {
             this.user = null
             localStorage.removeItem('idToken')
             localStorage.removeItem('user')
-
+            
             // Disconnect SSE
             sseService.disconnect()
         },
@@ -121,7 +121,7 @@ export const useAuthStore = defineStore('auth', {
         async logout(router = null) {
             try {
                 await signOut(auth);
-                this.clearAuth();
+                this.clearAuth(); 
                 if (router) {
                     // Clear browser history to prevent back button access
                     router.replace({ name: 'login' });
@@ -149,9 +149,9 @@ export const useAuthStore = defineStore('auth', {
 
                 await signOut(auth);
                 this.clearAuth()
-
+                
                 if (router) {
-                    await router.push('/please-verify');
+                    await router.push('/please-verify'); 
                 }
             } catch (error) {
                 this.clearAuth()
@@ -294,32 +294,11 @@ export const useAuthStore = defineStore('auth', {
                 throw new Error('EMAIL_REAUTH_REQUIRED')
             }
         },
-
+        
         connectSSE() {
             if (!this.idToken) {
-                console.warn('Auth: No token available for SSE connection')
                 return
             }
-
-            // console.log('Auth: Connecting to SSE with token')
-
-            // Set up token refresh callback for SSE
-            sseService.setTokenRefreshCallback(async () => {
-                try {
-                    const user = auth.currentUser
-                    if (user) {
-                        const newToken = await user.getIdToken(true) // Force refresh
-                        this.idToken = newToken
-                        localStorage.setItem('idToken', newToken)
-                        // console.log('Auth: Token refreshed for SSE')
-                        return newToken
-                    }
-                    return null
-                } catch (error) {
-                    console.error('Auth: Failed to refresh token for SSE:', error)
-                    throw error
-                }
-            })
 
             // Connect to SSE
             sseService.connect(this.idToken)
@@ -327,7 +306,7 @@ export const useAuthStore = defineStore('auth', {
             // Set up event listeners
             this.setupSSEListeners()
         },
-
+        
         setupSSEListeners() {
             // Listen for notifications - DISABLED
             // sseService.on('notification', (data) => {
@@ -339,7 +318,7 @@ export const useAuthStore = defineStore('auth', {
             //         notification.type === 'error' ? 8000 : 5000
             //     )
             // })
-
+            
             // Listen for session invitations - NOTIFICATIONS DISABLED
             sseService.on('session_invitation', (data) => {
                 // notificationService.info(
@@ -348,7 +327,7 @@ export const useAuthStore = defineStore('auth', {
                 //     6000
                 // )
             })
-
+            
             // Listen for session invitation acceptance - NOTIFICATIONS DISABLED
             sseService.on('session_invitation_accepted', (data) => {
                 // notificationService.success(
@@ -357,7 +336,7 @@ export const useAuthStore = defineStore('auth', {
                 //     5000
                 // )
             })
-
+            
             // Listen for relationship invitations
             sseService.on('relationship_invitation', (data) => {
                 notificationService.info(
@@ -366,7 +345,7 @@ export const useAuthStore = defineStore('auth', {
                     6000
                 )
             })
-
+            
             // Listen for session deletion
             sseService.on('session_deleted', (data) => {
                 notificationService.warning(
@@ -375,24 +354,11 @@ export const useAuthStore = defineStore('auth', {
                     6000
                 )
             })
-
+            
             // Listen for connection status changes
             sseService.onConnectionChange((status) => {
-                console.log('Auth: SSE connection status changed:', status)
+                // Handle connection status changes silently
             })
-        },
-
-        // Debug method to test SSE connection
-        async testSSEConnection() {
-            if (!this.idToken) {
-                console.error('Auth: No token available for SSE test')
-                return { success: false, error: 'No token available' }
-            }
-
-            // console.log('Auth: Testing SSE connection...')
-            const result = await sseService.testConnection(this.idToken)
-            // console.log('Auth: SSE test result:', result)
-            return result
         }
     }
 })
