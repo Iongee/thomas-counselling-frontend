@@ -38,7 +38,7 @@ class SSEService {
             url += '&ngrok-skip-browser-warning=true'
         }
 
-        console.log('SSE: Connecting to:', url.replace(/token=[^&]+/, 'token=***'))
+        // console.log('SSE: Connecting to:', url.replace(/token=[^&]+/, 'token=***'))
 
         this.eventSource = new EventSource(url, {
             withCredentials: true
@@ -71,15 +71,15 @@ class SSEService {
             // Check if it's a connection error (readyState 2 = CLOSED)
             if (this.eventSource.readyState === 2) {
                 if (this.shouldReconnect) {
-                    console.log('SSE: Connection closed, attempting to reconnect...')
+                    // console.log('SSE: Connection closed, attempting to reconnect...')
 
                     // If we have a token refresh callback and this might be an auth error, try refreshing token first
                     if (this.tokenRefreshCallback && this.reconnectAttempts === 0) {
                         try {
-                            console.log('SSE: Attempting to refresh token before reconnect...')
+                            // console.log('SSE: Attempting to refresh token before reconnect...')
                             const newToken = await this.tokenRefreshCallback()
                             if (newToken && newToken !== this.lastToken) {
-                                console.log('SSE: Got new token, reconnecting...')
+                                // console.log('SSE: Got new token, reconnecting...')
                                 this.connect(newToken)
                                 return
                             }
@@ -294,7 +294,7 @@ class SSEService {
                 testUrl += '&ngrok-skip-browser-warning=true'
             }
 
-            console.log('SSE: Testing connection to:', testUrl.replace(/token=[^&]+/, 'token=***'))
+            // console.log('SSE: Testing connection to:', testUrl.replace(/token=[^&]+/, 'token=***'))
 
             const testEventSource = new EventSource(testUrl, { withCredentials: true })
 
