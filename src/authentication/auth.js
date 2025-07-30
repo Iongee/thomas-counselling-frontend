@@ -302,6 +302,25 @@ export const useAuthStore = defineStore('auth', {
             }
 
             console.log('Auth: Connecting to SSE with token')
+
+            // Set up token refresh callback for SSE
+            sseService.setTokenRefreshCallback(async () => {
+                try {
+                    const user = auth.currentUser
+                    if (user) {
+                        const newToken = await user.getIdToken(true) // Force refresh
+                        this.idToken = newToken
+                        localStorage.setItem('idToken', newToken)
+                        console.log('Auth: Token refreshed for SSE')
+                        return newToken
+                    }
+                    return null
+                } catch (error) {
+                    console.error('Auth: Failed to refresh token for SSE:', error)
+                    throw error
+                }
+            })
+
             // Connect to SSE
             sseService.connect(this.idToken)
 
@@ -359,8 +378,21 @@ export const useAuthStore = defineStore('auth', {
 
             // Listen for connection status changes
             sseService.onConnectionChange((status) => {
-                // Handle connection status changes silently
+                console.log('Auth: SSE connection status changed:', status)
             })
+        },
+
+        // Debug method to test SSE connection
+        async testSSEConnection() {
+            if (!this.idToken) {
+                console.error('Auth: No token available for SSE test')
+                return { success: false, error: 'No token available' }
+            }
+
+            console.log('Auth: Testing SSE connection...')
+            const result = await sseService.testConnection(this.idToken)
+            console.log('Auth: SSE test result:', result)
+            return result
         }
     }
 })

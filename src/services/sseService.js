@@ -10,9 +10,15 @@ class SSEService {
         this.isConnected = false
         this.shouldReconnect = true
         this.connectionListeners = []
+        this.lastToken = null
+        this.tokenRefreshCallback = null
     }
 
-    connect(token) {
+    setTokenRefreshCallback(callback) {
+        this.tokenRefreshCallback = callback
+    }
+
+    async connect(token) {
         if (this.eventSource) {
             this.disconnect()
         }
@@ -21,6 +27,8 @@ class SSEService {
             console.error('SSE: No token provided')
             return
         }
+
+        this.lastToken = token
 
         // Try the simple endpoint first, then fall back to the class-based one
         let url = `${API_BASE_URL}/api/sse-simple/?token=${encodeURIComponent(token)}`
@@ -52,7 +60,7 @@ class SSEService {
             }
         }
 
-        this.eventSource.onerror = (error) => {
+        this.eventSource.onerror = async (error) => {
             console.error('SSE: Connection error', {
                 readyState: this.eventSource.readyState,
                 error: error
@@ -63,7 +71,23 @@ class SSEService {
             // Check if it's a connection error (readyState 2 = CLOSED)
             if (this.eventSource.readyState === 2) {
                 if (this.shouldReconnect) {
-                    console.log('SSE: Attempting to reconnect...')
+                    console.log('SSE: Connection closed, attempting to reconnect...')
+
+                    // If we have a token refresh callback and this might be an auth error, try refreshing token first
+                    if (this.tokenRefreshCallback && this.reconnectAttempts === 0) {
+                        try {
+                            console.log('SSE: Attempting to refresh token before reconnect...')
+                            const newToken = await this.tokenRefreshCallback()
+                            if (newToken && newToken !== this.lastToken) {
+                                console.log('SSE: Got new token, reconnecting...')
+                                this.connect(newToken)
+                                return
+                            }
+                        } catch (refreshError) {
+                            console.error('SSE: Token refresh failed:', refreshError)
+                        }
+                    }
+
                     this.handleReconnect(token)
                 }
             }
@@ -255,8 +279,54 @@ class SSEService {
         return {
             isConnected: this.isConnected,
             reconnectAttempts: this.reconnectAttempts,
-            shouldReconnect: this.shouldReconnect
+            shouldReconnect: this.shouldReconnect,
+            readyState: this.eventSource ? this.eventSource.readyState : null,
+            url: this.eventSource ? this.eventSource.url : null
         }
+    }
+
+    // Method to test connection with detailed error reporting
+    async testConnection(token) {
+        return new Promise((resolve) => {
+            const testUrl = `${API_BASE_URL}/api/sse-simple/?token=${encodeURIComponent(token)}`
+
+            if (API_BASE_URL.includes('ngrok')) {
+                testUrl += '&ngrok-skip-browser-warning=true'
+            }
+
+            console.log('SSE: Testing connection to:', testUrl.replace(/token=[^&]+/, 'token=***'))
+
+            const testEventSource = new EventSource(testUrl, { withCredentials: true })
+
+            const timeout = setTimeout(() => {
+                testEventSource.close()
+                resolve({
+                    success: false,
+                    error: 'Connection timeout',
+                    readyState: testEventSource.readyState
+                })
+            }, 10000) // 10 second timeout
+
+            testEventSource.onopen = () => {
+                clearTimeout(timeout)
+                testEventSource.close()
+                resolve({
+                    success: true,
+                    message: 'Connection successful'
+                })
+            }
+
+            testEventSource.onerror = (error) => {
+                clearTimeout(timeout)
+                testEventSource.close()
+                resolve({
+                    success: false,
+                    error: 'Connection failed',
+                    readyState: testEventSource.readyState,
+                    details: error
+                })
+            }
+        })
     }
 }
 
