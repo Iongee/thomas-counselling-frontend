@@ -41,7 +41,7 @@ class SSEService {
         // console.log('SSE: Connecting to:', url.replace(/token=[^&]+/, 'token=***'))
 
         this.eventSource = new EventSource(url, {
-            withCredentials: true
+            withCredentials: false  // Token is in URL parameter, not cookies
         })
 
         this.eventSource.onopen = (event) => {
@@ -296,7 +296,7 @@ class SSEService {
 
             // console.log('SSE: Testing connection to:', testUrl.replace(/token=[^&]+/, 'token=***'))
 
-            const testEventSource = new EventSource(testUrl, { withCredentials: true })
+            const testEventSource = new EventSource(testUrl, { withCredentials: false })
 
             const timeout = setTimeout(() => {
                 testEventSource.close()
